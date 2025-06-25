@@ -3,8 +3,18 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:quickmovies/Discover_Screen.dart';
 import 'package:quickmovies/Home_Screen.dart';
 import 'package:quickmovies/Profile_Screen.dart';
+import 'package:quickmovies/Signup_Screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: 'https://szybzpodhznbkoydefce.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eWJ6cG9kaHpuYmtveWRlZmNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2OTA1MDgsImV4cCI6MjA2NjI2NjUwOH0.6pE2qcJSscH4cWhbormYIly8o4G2Sc5nn6L6rJceSF0',
+  );
+
   runApp(const MyApp());
 }
 
@@ -12,12 +22,15 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
+  
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       theme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
-      home: NavigationBottomBar(),
+      home: Supabase.instance.client.auth.currentSession != null
+          ? const NavigationBottomBar() // already logged in
+          : const SignupScreen(), // show login/signup first
     );
   }
 }
@@ -34,7 +47,6 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
     HomeScreen(),
     DiscoverScreen(),
     ProfileScreen(),
-    // MovieViewScreen(),
   ];
 
   int currentIndex = 0;
